@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+ml/model.pkl
+node_modules/
+dist/
+ml/data/phishing_email.csv

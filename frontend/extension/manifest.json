@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "Phishing detector",
+    "version": "1.0",
+    "description": "Scans email content and checks for phishing using a local ML API.",
+    "permissions": ["scripting", "storage", "activeTab"],
+    "host_permissions": ["<all_urls"],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "layers.png",
+            "64": "key.png",
+            "128": "diploma.png"
+        }
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["popup.js"]
+        }
+    ]
+}
