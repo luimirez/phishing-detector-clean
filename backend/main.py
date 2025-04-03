@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Ensure proper path resolution if needed
 sys.path.append(os.path.dirname(__file__))
+print("PYTHONPATH:", sys.path)
 
 # Import from the correct module path
 from backend.app.detector import load_model, is_phishing
