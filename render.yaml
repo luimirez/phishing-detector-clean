@@ -8,3 +8,6 @@ services:
     envVars:
       - key: PYTHONPATH
         value: ./backend
+buildCommand: |
+  pip install -r requirements.txt
+  python ml/train_model.py
