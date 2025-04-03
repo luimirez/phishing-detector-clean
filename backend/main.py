@@ -1,6 +1,8 @@
 import sys
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from app import detector
+from app.detector import load_model
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -38,11 +40,14 @@ def read_root():
 
 #Detecting the  Detection endpoint
 @app.post("/scan")
-def scan_email(email: EmailContent):
-    full_text = f"{email.subject} {email.body}"
-    result = is_phishing(full_text)
-    return {
-        "phishing": result,
-        "message": "Phishing detected!" if result else "Message is safe"
-    }
+async def scan_email(content: str):
+    model = load_model()
+    # Check if model is loaded
+    if model is None:
+        raise HTTPException(status_code=500, detail="Model not available.")
+
+    # Perform the prediction
+    prediction = detector.model.predict([content])[0]
+    
+    return {"is_phishing": bool(prediction)}
     
