@@ -1,53 +1,51 @@
-import sys
 import os
+import sys
 from fastapi import FastAPI, HTTPException
-from backend.app import detector
-from app.detector import load_model
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-
-
+# Ensure proper path resolution if needed
 sys.path.append(os.path.dirname(__file__))
-from app.detector import is_phishing
 
-# WE must create the instance to access to the FastAPI
+# Import from the correct module path
+from backend.app.detector import load_model, is_phishing
+
+# Create FastAPI instance
 app = FastAPI(
     title="Phishing Awareness Detector API",
-    description="API for detecting Phishing messages using a trained ML model",
+    description="API for detecting phishing messages using a trained ML model",
     version="1.0.0"
 )
 
-#We are going to provide allowances to the browser extension CORS (Essential!)
+# Setup CORS (update allowed origins in production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], #in the production area, we must restrict the specific origins
+    allow_origins=["*"],  # ⚠️ In production, specify allowed origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-#We are going to define the request Schema in the system
+# Define request schema
 class EmailContent(BaseModel):
     subject: str
     body: str
-    
-    
-#Creating the Root Endpoint
+
+# Root endpoint
 @app.get("/")
 def read_root():
     return {"message": "Phishing awareness detector is running."}
 
-#Detecting the  Detection endpoint
+# Scan endpoint
 @app.post("/scan")
-async def scan_email(content: str):
+async def scan_email(content: EmailContent):
     model = load_model()
-    # Check if model is loaded
+    
     if model is None:
         raise HTTPException(status_code=500, detail="Model not available.")
-
-    # Perform the prediction
-    prediction = detector.model.predict([content])[0]
+    
+    # Combine subject and body for prediction
+    combined_text = f"{content.subject} {content.body}"
+    prediction = model.predict([combined_text])[0]
     
     return {"is_phishing": bool(prediction)}
-    
