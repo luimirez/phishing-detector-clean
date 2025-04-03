@@ -1,7 +1,7 @@
 import sys
 import os
 from fastapi import FastAPI, HTTPException
-from app import detector
+from backend.app import detector
 from app.detector import load_model
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
